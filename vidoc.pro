@@ -25,8 +25,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    targetfilehandler.cpp
 
 HEADERS += \
         mainwindow.h \
-    appinfo.h
+    appinfo.h \
+    targetfilehandler.h

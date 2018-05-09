@@ -2,16 +2,13 @@
 #define MAINWINDOW_H
 
 #include "appinfo.h"
+#include "targetfilehandler.h"
 
 #include <QMainWindow>
 #include <QAction>
-//#include <QActionGroup>
-//#include <QLabel>
 #include <QMenu>
 #include <QVBoxLayout>
-//#include <QString>
 #include <QStatusBar>
-//#include <QContextMenuEvent>
 #include <QMessageBox>
 #include <QApplication>
 #include <QMenuBar>
