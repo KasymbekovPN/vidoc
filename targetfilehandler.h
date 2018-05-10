@@ -8,6 +8,11 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QListView>
+#include <QHBoxLayout>
+#include <QSpacerItem>
+#include <QDebug>
+#include <QFileDialog>
+#include <QStringList>
 
 class TargetFileHandler : public QDialog
 {
@@ -24,6 +29,11 @@ public:
 signals:
 
 public slots:
+    void btnPathOnClick();
+    void btnOkOnClick();
+    void btnIgnoredListAddOnClick();
+    void btnIgnoredListClearOnClick();
+    void btnIgnoredListRemoteOnClick();
 
 private:
     QLabel *lblPath;
