@@ -13,6 +13,12 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QStringList>
+#include <QStringListModel>
+#include <QMessageBox>
+#include <QDir>
+#include <QAbstractItemView>
+#include <QList>
+#include <QUrl>
 
 class TargetFileHandler : public QDialog
 {
@@ -29,25 +35,37 @@ public:
 signals:
 
 public slots:
-    void btnPathOnClick();
+    void btnPath2TargetOnClick();
     void btnOkOnClick();
     void btnIgnoredListAddOnClick();
     void btnIgnoredListClearOnClick();
     void btnIgnoredListRemoteOnClick();
+    void btnSourceDirOnClick();
+    void btnOutputDirOnClick();
 
 private:
-    QLabel *lblPath;
-    QLabel *lblName;
+    QLabel *lblPath2Target;
+    QLabel *lblTargetName;
+
+    QLabel *lblSourceDir;
+    QLineEdit* leSourceDir;
+    QPushButton* btnSourceDir;
+
+    QLabel *lblOutputDir;
+    QLineEdit* leOutputDir;
+    QPushButton* btnOutputDir;
+
     QLabel *lblIgnored;
-    QLineEdit *lePath;
-    QLineEdit *leName;
+    QLineEdit *lePath2Target;
+    QLineEdit *leTargetName;
     QPushButton* btnEsc;
     QPushButton* btnOk;
-    QPushButton* btnPath;
+    QPushButton* btnPath2Target;
     QPushButton* btnIgnoredListClear;
     QPushButton* btnIgnoredListAdd;
     QPushButton* btnIgnoredListRemote;
     QListView *lstvIgnored;
+    QStringListModel* ignoredListModel;
 };
 
 #endif // NEWTARGETCREATIONWINDOW_H
