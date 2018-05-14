@@ -79,7 +79,69 @@ void TargetFileHandler::btnPath2TargetOnClick()
 
 void TargetFileHandler::btnOkOnClick()
 {
-    qDebug() << "btnOkOnClick";
+    if (leTargetName->text().toStdString().empty())
+    {
+        QMessageBox::warning(this, tr("Внимание!"), tr("Имя цели не заданно."));
+        return;
+    }
+
+    if (lePath2Target->text().toStdString().empty())
+    {
+        QMessageBox::warning(this, tr("Внимание!"), tr("Путь до цели не задан."));
+        return;
+    }
+    QDir dir = lePath2Target->text();
+    if (!dir.exists())
+    {
+        QMessageBox::warning(this, tr("Внимание!"), tr("<b>Путь до цели.</b><br>"
+                                                       "Указан путь до несуществующей директории."));
+        return;
+    }
+
+    if (leSourceDir->text().toStdString().empty())
+    {
+        QMessageBox::warning(this, tr("Внимание!"), tr("Путь до входных данных не задан."));
+        return;
+    }
+
+    dir.setPath(leSourceDir->text());
+    if (!dir.exists())
+    {
+        QMessageBox::warning(this, tr("Внимание"), tr("<b>Входные данные</b><br>"
+                                                      "Указан путь до несуществующей директории."));
+        return;
+    }
+
+    if (leOutputDir->text().toStdString().empty())
+    {
+        QMessageBox::warning(this, tr("Внимание!"), tr("Путь до выходных данных не задан."));
+        return;
+    }
+
+    dir.setPath(leOutputDir->text());
+    if (!dir.exists())
+    {
+        QMessageBox::warning(this, tr("Внимание"), tr("<b>Выходные данные</b><br>"
+                                                      "Указан путь до несуществующей директории."));
+        return;
+    }
+
+    QJsonArray ignoredLstArray;
+    QStringList ignoredLst = ignoredListModel->stringList();
+    for(int i = 0; i < ignoredLst.size(); ++i)
+    {
+        ignoredLstArray.insert(i, QJsonValue(ignoredLst[i]));
+    }
+
+    QJsonObject root;
+    root.insert("source-dir", QJsonValue(leSourceDir->text()));
+    root.insert("output-dir", QJsonValue(leOutputDir->text()));
+    root.insert("ignored-files", QJsonValue(ignoredLstArray));
+
+    QJsonDocument jDoc;
+    jDoc.setObject(root);
+
+    qDebug() << jDoc.toJson();
 }
 
 void TargetFileHandler::btnIgnoredListAddOnClick()
@@ -99,11 +161,11 @@ void TargetFileHandler::btnIgnoredListAddOnClick()
 
     if ("" != warningMsg)
     {
-        QMessageBox::warning(this, tr("ВАнимание"), warningMsg);
+        QMessageBox::warning(this, tr("Внимание"), warningMsg);
         return;
     }
 
-    QStringList selectedFileNames = QFileDialog::getOpenFileNames(this, "Open Dialog", "", "*.cpp *.c *.hpp *.h");
+    QStringList selectedFileNames = QFileDialog::getOpenFileNames(this, "Open Dialog", leSourceDir->text(), "*.cpp *.c *.hpp *.h");
     QStringList ignoredList = ignoredListModel->stringList();
 
     QStringList resList = ignoredList;

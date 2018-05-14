@@ -19,6 +19,10 @@
 #include <QAbstractItemView>
 #include <QList>
 #include <QUrl>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 class TargetFileHandler : public QDialog
 {
