@@ -30,8 +30,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::createNewTarget()
 {
-//    qDebug() << tr("action createNew Target");
-    TargetFileHandler win(TargetFileHandler::mode::create, this);
+    TargetFileHandler win(TargetFileHandler::mode::create, "", this);
     win.exec();
 }
 

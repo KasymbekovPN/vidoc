@@ -1,6 +1,9 @@
 #include "targetfilehandler.h"
 
-TargetFileHandler::TargetFileHandler(mode mode_, QWidget *parent) : QDialog(parent)
+TargetFileHandler::TargetFileHandler(mode mode_, const QString &targetPath_, QWidget *parent)
+    : QDialog(parent),
+      m_mode(mode_),
+      m_targetPath(targetPath_)
 {
 
     lblTargetName = new QLabel(tr("Имя цели:"));
@@ -133,15 +136,19 @@ void TargetFileHandler::btnOkOnClick()
         ignoredLstArray.insert(i, QJsonValue(ignoredLst[i]));
     }
 
-    QJsonObject root;
-    root.insert("source-dir", QJsonValue(leSourceDir->text()));
-    root.insert("output-dir", QJsonValue(leOutputDir->text()));
+    QJsonObject root;    
     root.insert("ignored-files", QJsonValue(ignoredLstArray));
+    root.insert("output-dir", QJsonValue(leOutputDir->text()));
+    root.insert("source-dir", QJsonValue(leSourceDir->text()));
 
     QJsonDocument jDoc;
     jDoc.setObject(root);
 
-    qDebug() << jDoc.toJson();
+    QString fileName = lePath2Target->text() + "/" + leTargetName->text() + ".json";
+    QFile jsonFile(fileName);
+    jsonFile.open(QFile::WriteOnly);
+    jsonFile.write(jDoc.toJson());
+    jsonFile.close();
 }
 
 void TargetFileHandler::btnIgnoredListAddOnClick()

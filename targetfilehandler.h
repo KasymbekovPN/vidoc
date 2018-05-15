@@ -23,6 +23,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QFile>
 
 class TargetFileHandler : public QDialog
 {
@@ -34,7 +35,7 @@ public:
         edit
     };
 
-    explicit TargetFileHandler(mode mode_, QWidget *parent = nullptr);
+    explicit TargetFileHandler(mode mode_, const QString& targetPath_ = "", QWidget *parent = nullptr);
 
 signals:
 
@@ -48,6 +49,9 @@ public slots:
     void btnOutputDirOnClick();
 
 private:
+    mode m_mode;
+    QString m_targetPath;
+
     QLabel *lblPath2Target;
     QLabel *lblTargetName;
 
