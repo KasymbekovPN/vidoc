@@ -24,6 +24,9 @@ public:
 
 private slots:
     void createNewTarget();
+#ifdef  TASK_0_0_2
+    void clickOnActtion_OpenTarget();
+#endif
     void about();
 
 private:
@@ -34,6 +37,9 @@ private:
     QMenu* helpMenu;
 
     QAction* actCreateNewTarget;
+#ifdef  TASK_0_0_2
+    QAction* actOpenTarget;
+#endif
     QAction* actExit;
     QAction* actAbout;
     QAction* actAboutQt;

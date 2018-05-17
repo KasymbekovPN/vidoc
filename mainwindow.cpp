@@ -34,6 +34,24 @@ void MainWindow::createNewTarget()
     win.exec();
 }
 
+#ifdef  TASK_0_0_2
+void MainWindow::clickOnActtion_OpenTarget()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open file", QDir::homePath(), "*.json");
+    QFile file(filePath);
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QMessageBox::critical(this, tr("Ошибка"), tr("Не удается открыть файл."));
+    }
+
+    QByteArray lines = file.readAll();
+    QJsonObject jObj = QJsonDocument::fromJson(lines).object();
+    qDebug() << jObj;
+    qDebug() << jObj["source-dir"].toString();
+
+}
+#endif
+
 void MainWindow::about()
 {
     QString msg = tr("Версия приложения: ") + tr(VER_APPVERSION);
@@ -45,6 +63,11 @@ void MainWindow::createActions()
     actCreateNewTarget = new QAction(tr("Новая цель..."), this);
     actCreateNewTarget->setStatusTip(tr("Создать новую цель."));
     connect(actCreateNewTarget, &QAction::triggered, this, &MainWindow::createNewTarget);
+
+#ifdef  TASK_0_0_2
+    actOpenTarget = new QAction(tr("Открыть цель..."), this);
+    connect(actOpenTarget, &QAction::triggered, this, &MainWindow::clickOnActtion_OpenTarget);
+#endif
 
     actExit = new QAction(tr("Закрыть"), this);
     actExit->setStatusTip(tr("Закрыть приложение"));
@@ -61,6 +84,9 @@ void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("Файл"));
     fileMenu->addAction(actCreateNewTarget);
+#ifdef  TASK_0_0_2
+    fileMenu->addAction(actOpenTarget);
+#endif
     fileMenu->addAction(actExit);
 
     helpMenu = menuBar()->addMenu(tr("Справка"));
