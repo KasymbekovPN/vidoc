@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include <QAbstractItemModel>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -7,12 +9,20 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *widget = new QWidget(this);
     setCentralWidget(widget);
 
-    QWidget *filler = new QWidget(this);
-    filler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+//    QWidget *filler = new QWidget(this);
+//    filler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+//    model = new TreeModel("Hello \n world");
+    model2 = new TreeModel2;
+
+    treeView = new QTreeView;
+//    treeView->setModel(model);
+    treeView->setModel(model2);
+    treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(5);
-    layout->addWidget(filler);
+    layout->addWidget(treeView);
     widget->setLayout(layout);
 
     createActions();
@@ -46,8 +56,9 @@ void MainWindow::clickOnActtion_OpenTarget()
 
     QByteArray lines = file.readAll();
     QJsonObject jObj = QJsonDocument::fromJson(lines).object();
-    qDebug() << jObj;
-    qDebug() << jObj["source-dir"].toString();
+
+    model2->setConfig(jObj);
+    treeView->reset();
 
 }
 #endif

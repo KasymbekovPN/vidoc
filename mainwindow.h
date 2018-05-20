@@ -3,6 +3,11 @@
 
 #include "appinfo.h"
 #include "targetfilehandler.h"
+//#include "treemodel.h"
+//#include "treeitem.h"
+#include "treeitem2.h"
+#include "treemodel2.h"
+
 
 #include <QMainWindow>
 #include <QAction>
@@ -13,6 +18,8 @@
 #include <QApplication>
 #include <QMenuBar>
 #include <QDebug>
+#include <QTreeView>
+#include <QTreeWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -43,6 +50,12 @@ private:
     QAction* actExit;
     QAction* actAbout;
     QAction* actAboutQt;
+
+#ifdef  TASK_0_0_3
+//    TreeModel* model;
+    TreeModel2* model2;
+    QTreeView* treeView;
+#endif
 };
 
 #endif // MAINWINDOW_H

@@ -26,9 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    targetfilehandler.cpp
+    targetfilehandler.cpp \
+    treeitem.cpp \
+    treemodel.cpp \
+    treeitem2.cpp \
+    treemodel2.cpp
 
 HEADERS += \
         mainwindow.h \
     appinfo.h \
-    targetfilehandler.h
+    targetfilehandler.h \
+    treeitem.h \
+    treemodel.h \
+    treeitem2.h \
+    treemodel2.h
