@@ -3,7 +3,11 @@
 TreeModel2::TreeModel2(QObject *parent)
 {
     QVariant rootItem = tr("Заголовок");
+#ifdef  TASK_0_0_3_003
+    m_rootItem = new TreeItem2(TreeItem2::treeType::root, rootItem);
+#else
     m_rootItem = new TreeItem2(rootItem);
+#endif
 
 //    m_rootItem->appendChild(new TreeItem2(QVariant("1"), m_rootItem));
 //    m_rootItem->appendChild(new TreeItem2(QVariant("2"), m_rootItem));
@@ -176,7 +180,51 @@ void TreeModel2::setData()
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
     QFileInfoList infoList = dir.entryInfoList();
 
-    foreach (QFileInfo fileInfo, infoList) {
+    foreach (QFileInfo fileInfo, infoList) {        
+#ifdef TASK_0_0_3_003
+        if (fileInfo.isDir())
+        {
+            m_rootItem->appendChild(new TreeItem2(
+                                        TreeItem2::treeType::directory,
+                                        QVariant(fileInfo.filePath()),
+                                        m_rootItem
+                                        ));
+        }
+        else if (fileInfo.isFile() &&
+                 ("h" == fileInfo.suffix() || "c" == fileInfo.suffix()))
+        {
+            bool need_append = true;
+            for(int i = 0; i < m_rootItem->childCount(); ++i)
+            {
+                QFileInfo fi = QFileInfo(m_rootItem->child(i)->path());
+
+                if (fi.baseName() == fileInfo.baseName())
+                {
+                    need_append = false;
+                    if ("h" == fileInfo.suffix())
+                    {
+                        m_rootItem->child(i)->setFlagHeader();
+                    }
+                    else
+                    {
+                        m_rootItem->child(i)->setFlagSource();
+                    }
+                }
+            }
+
+            if (need_append)
+            {
+                m_rootItem->appendChild(new TreeItem2(
+                                            TreeItem2::treeType::file,
+                                            QVariant(fileInfo.filePath()),
+                                            m_rootItem
+                                            ));
+            }
+
+        }
+
+#else
         m_rootItem->appendChild(new TreeItem2(QVariant(fileInfo.fileName()), m_rootItem));
+#endif
     }
 }
