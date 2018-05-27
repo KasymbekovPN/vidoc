@@ -5,8 +5,8 @@
 #include "targetfilehandler.h"
 //#include "treemodel.h"
 //#include "treeitem.h"
-#include "treeitem2.h"
-#include "treemodel2.h"
+#include "treeitem.h"
+#include "treemodel.h"
 
 
 #include <QMainWindow>
@@ -31,9 +31,7 @@ public:
 
 private slots:
     void createNewTarget();
-#ifdef  TASK_0_0_2
     void clickOnActtion_OpenTarget();
-#endif
     void about();
 
 private:
@@ -44,18 +42,13 @@ private:
     QMenu* helpMenu;
 
     QAction* actCreateNewTarget;
-#ifdef  TASK_0_0_2
     QAction* actOpenTarget;
-#endif
     QAction* actExit;
     QAction* actAbout;
     QAction* actAboutQt;
 
-#ifdef  TASK_0_0_3
-//    TreeModel* model;
-    TreeModel2* model2;
+    TreeModel* model;
     QTreeView* treeView;
-#endif
 };
 
 #endif // MAINWINDOW_H

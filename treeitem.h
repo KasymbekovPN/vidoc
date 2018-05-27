@@ -1,30 +1,69 @@
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef TREEITEM2_H
+#define TREEITEM2_H
+
 
 #include "appinfo.h"
 
-#include <QList>
+#include <QString>
 #include <QVariant>
+#include <QList>
+#include <QDebug>
+#include <QFileInfo>
+#include <QDir>
+#include <QFileInfoList>
 
 class TreeItem
 {
 public:
-    explicit TreeItem(const QList<QVariant>& data_, TreeItem* parent_ = nullptr);
+
+    enum class treeType
+    {
+        root,
+        directory,
+        file,
+        function,
+        variable,
+        enumeration,
+        macros,
+
+        size
+    };
+
+    explicit TreeItem(treeType type, const QVariant& data, TreeItem* parent = nullptr);
     ~TreeItem();
 
-    void appendChild(TreeItem* child_);
+    void setData(const QVariant& data);
+    QVariant data() const;
 
-    TreeItem *child(int row_);
+    void appendChild(TreeItem* child);
+    TreeItem* child(int row);
     int childCount() const;
-    int columnCount() const;
-    QVariant data(int column_) const;
+
+    TreeItem* paremtItem();
     int row() const;
-    TreeItem* parentItem();
+
+    QString typeIconPath() const;
+
+    treeType type() const;
+    void setFlagHeader();
+    void setFlagSource();
+    QString path() const;
 
 private:
-    QList<TreeItem*> m_childItems;
-    QList<QVariant> m_itemData;
+
+    void setData();
+
+    static QList<QString> m_type_icon_path;
+
     TreeItem* m_parentItem;
+    QVariant m_data;
+    QList<TreeItem*> m_childItem;
+
+    treeType m_type;
+    QString m_path;
+    bool m_flag_header_file;
+    bool m_flag_source_file;
+
 };
 
-#endif // TREEITEM_H
+#endif // TREEITEM2_H

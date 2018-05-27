@@ -9,15 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *widget = new QWidget(this);
     setCentralWidget(widget);
 
-//    QWidget *filler = new QWidget(this);
-//    filler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-//    model = new TreeModel("Hello \n world");
-    model2 = new TreeModel2;
+    model = new TreeModel;
 
     treeView = new QTreeView;
-//    treeView->setModel(model);
-    treeView->setModel(model2);
+    treeView->setModel(model);
     treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -44,7 +39,6 @@ void MainWindow::createNewTarget()
     win.exec();
 }
 
-#ifdef  TASK_0_0_2
 void MainWindow::clickOnActtion_OpenTarget()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open file", QDir::homePath(), "*.json");
@@ -57,11 +51,11 @@ void MainWindow::clickOnActtion_OpenTarget()
     QByteArray lines = file.readAll();
     QJsonObject jObj = QJsonDocument::fromJson(lines).object();
 
-    model2->setConfig(jObj);
+    QFileInfo fi = filePath;
+    model->setConfig(jObj, fi.baseName());
     treeView->reset();
 
 }
-#endif
 
 void MainWindow::about()
 {
@@ -75,10 +69,8 @@ void MainWindow::createActions()
     actCreateNewTarget->setStatusTip(tr("Создать новую цель."));
     connect(actCreateNewTarget, &QAction::triggered, this, &MainWindow::createNewTarget);
 
-#ifdef  TASK_0_0_2
     actOpenTarget = new QAction(tr("Открыть цель..."), this);
     connect(actOpenTarget, &QAction::triggered, this, &MainWindow::clickOnActtion_OpenTarget);
-#endif
 
     actExit = new QAction(tr("Закрыть"), this);
     actExit->setStatusTip(tr("Закрыть приложение"));
@@ -95,9 +87,7 @@ void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("Файл"));
     fileMenu->addAction(actCreateNewTarget);
-#ifdef  TASK_0_0_2
     fileMenu->addAction(actOpenTarget);
-#endif
     fileMenu->addAction(actExit);
 
     helpMenu = menuBar()->addMenu(tr("Справка"));

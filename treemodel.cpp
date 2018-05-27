@@ -1,64 +1,41 @@
 #include "treemodel.h"
-#include "treeitem.h"
 
-#include <QStringList>
-
-/*!
- * \brief TreeModel::TreeModel
- * \param data_ - инициализирующие данные
- * \param parent_ - родитель.
- */
-TreeModel::TreeModel(const QString &data_, QObject *parent_)
-    :QAbstractItemModel(parent_)
-{
-    QList<QVariant> rootData;
-#ifdef  TASK_0_0_3_001
-    rootData << tr("Здесь будет какой-то заголовок, например, имя цели");
-#else
-    rootData << "Title" << "Summary";
-#endif
-    m_rootItem = new TreeItem(rootData);
-
-#ifndef  TASK_0_0_3_001
-    setupModelData(data_.split("\n"), m_rootItem);
-#endif
-
-    QList<QVariant> lst;
-    lst << "1";
-    m_rootItem->appendChild(new TreeItem(lst, m_rootItem));
-
-    lst.clear();
-    lst << "2" << "3";
-    m_rootItem->appendChild(new TreeItem(lst, m_rootItem));
-
-    lst.clear();
-    lst << "2_1";
-    m_rootItem->child(0)->appendChild(new TreeItem(lst, m_rootItem->child(0)));
-}
-
-#ifdef  TASK_0_0_3_001
 TreeModel::TreeModel(QObject *parent)
-    :QAbstractItemModel(parent)
 {
-
+    QVariant rootItem = tr("Заголовок");
+    m_rootItem = new TreeItem(TreeItem::treeType::root, rootItem);
 }
-#endif
 
 TreeModel::~TreeModel()
 {
     delete m_rootItem;
 }
 
-QVariant TreeModel::data(const QModelIndex &index_, int role_) const
+QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index_.isValid() || Qt::DisplayRole != role_)
+
+    if (!index.isValid())
     {
         return QVariant();
     }
 
-    TreeItem* item = static_cast<TreeItem*>(index_.internalPointer());
+    switch(role)
+    {
+    case Qt::DisplayRole:
+    {
+        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+        return item->data();
+    }  break;
+    case Qt::DecorationRole:
+    {
+        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+        return QIcon(item->typeIconPath());
+     }   break;
+    default:
+        break;
+    }
 
-    return item->data(index_.column());
+    return QVariant();
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -68,135 +45,182 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
             : 0);
 }
 
-QVariant TreeModel::headerData(int section_, Qt::Orientation orientation_, int role_) const
+QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-
-    return (Qt::Horizontal == orientation_ && Qt::DisplayRole == role_
-            ? m_rootItem->data(section_)
+    return (Qt::Horizontal == orientation && Qt::DisplayRole == role
+            ? m_rootItem->data()
             : QVariant());
 }
 
-QModelIndex TreeModel::index(int row_, int column_, const QModelIndex &parent_) const
+QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const
 {
-
-    if (!hasIndex(row_, column_, parent_))
+    if (!hasIndex(row, column, parent))
     {
         return QModelIndex();
     }
 
     TreeItem* parentItem;
-    parentItem = parent_.isValid()
-            ? static_cast<TreeItem*>(parent_.internalPointer())
-            : m_rootItem;
+    parentItem = parent.isValid()
+            ?static_cast<TreeItem*>(parent.internalPointer())
+           : m_rootItem;
 
-    TreeItem* childItem = parentItem->child(row_);
-
+    TreeItem* childItem = parentItem->child(row);
     return (childItem
-            ? createIndex(row_, column_, childItem)
+            ? createIndex(row, column, childItem)
             : QModelIndex());
 }
 
-QModelIndex TreeModel::parent(const QModelIndex &index_) const
+QModelIndex TreeModel::parent(const QModelIndex &child) const
 {
-    if (!index_.isValid())
+    if (!child.isValid())
     {
         return QModelIndex();
     }
 
-    TreeItem* childItem = static_cast<TreeItem*>(index_.internalPointer());
-    TreeItem* parentItem = childItem->parentItem();
+    TreeItem* childItem = static_cast<TreeItem*>(child.internalPointer());
+    TreeItem* parentItem = childItem->paremtItem();
 
-    if (parentItem == m_rootItem)
-    {
-        return QModelIndex();
-    }
-
-    return createIndex(parentItem->row(), 0, parentItem);
+    return (parentItem == m_rootItem
+            ? QModelIndex()
+            : createIndex(parentItem->row(), 0, parentItem));
 }
 
-int TreeModel::rowCount(const QModelIndex &parent_) const
+int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    TreeItem* parentItem;
-    if (0 < parent_.column())
+    if (0 < parent.column())
     {
         return 0;
     }
 
-    parentItem = (parent_.isValid()
-                  ? static_cast<TreeItem*>(parent_.internalPointer())
-                  : m_rootItem);
+    TreeItem* parentItem = (parent.isValid()
+                             ? static_cast<TreeItem*>(parent.internalPointer())
+                             : m_rootItem);
 
     return parentItem->childCount();
 }
 
-int TreeModel::columnCount(const QModelIndex &parent_) const
+int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return (parent_.isValid()
-            ? static_cast<TreeItem*>(parent_.internalPointer())->columnCount()
-            : m_rootItem->columnCount());
+    return 1;
 }
 
-void TreeModel::setData(const QString &data)
-{
-    setupModelData(data.split("\n"), m_rootItem);
-}
-
-void TreeModel::setupModelData(const QStringList &lines, TreeItem *parent_)
+void TreeModel::setConfig(const QJsonObject &config, const QString& target_name)
 {
 
-//    qDebug() << lines;
+    m_rootItem->setData(QVariant(target_name));
 
-    QList<TreeItem*> parents;
-    QList<int> indecations;
-    parents << parent_;
-    indecations << 0;
-
-    int number = 0;
-
-    while (number < lines.count())
+    //
+    // Получаем из конфигурацимонного файла цели путь
+    // директории с исходнимами; проверяем - существует ли
+    // директория.
+    //
+    m_source_dir = config["source-dir"].toString();
+    QDir source_dir = m_source_dir;
+    if (!source_dir.exists() || m_source_dir.isEmpty())
     {
-        int position = 0;
-        while(position < lines[number].length())
-        {
-            if (' ' != lines[number].at(position))
-            {
-                break;
-            }
+        QMessageBox::critical(nullptr, tr("Ошибка"),
+                              tr("Входная директория : \"") + m_source_dir + tr("\" не существует"));
 
-            position++;
+        m_source_dir.clear();
+        return;
+    }
+
+    //
+    // Получаем из конфигурационного файла цели путь
+    // выходной директории; проверяем - существует ли
+    // директория.
+    //
+    m_output_dir = config["output-dir"].toString();
+    QDir output_dir = m_output_dir;
+    if (!output_dir.exists() || m_output_dir.isEmpty())
+    {
+        QMessageBox::critical(nullptr, tr("Ошибка"),
+                              tr("Выходная директория : \"") + m_source_dir + tr("\" не существует"));
+
+        m_output_dir.clear();
+        return;
+    }
+
+    //
+    // Получаем из конфигурационного файла цели список
+    // игнорируемых файлов; проверям - существуют ли файлы.
+    //
+    QList<QVariant> lst = config["ignored-files"].toArray().toVariantList();
+    QList<QString> nonexist_file;
+    QFileInfo fileInfo;
+    foreach (QVariant vStr, lst) {
+        QString filePath = vStr.toString();
+        fileInfo = filePath;
+        if (fileInfo.exists() && fileInfo.isFile())
+        {
+            m_ignored_files.append(filePath);
         }
-
-        QString lineData = lines[number].mid(position).trimmed();
-
-        if (!lineData.isEmpty())
+        else
         {
-            QStringList columnString = lineData.split("\t", QString::SkipEmptyParts);
-            QList<QVariant> columnData;
-            for(int column = 0; column < columnString.count(); ++column)
-            {
-                columnData << columnString[column];
-            }
+            nonexist_file.append(filePath);
+        }
+    }
 
-            if (position > indecations.last())
+    if (!nonexist_file.isEmpty())
+    {
+        QString msg = tr("Следующие файлы, отмеченные как игнорируемые, не существуют:");
+        foreach (auto name, nonexist_file) {
+            msg += "\n" + name;
+        }
+        QMessageBox::warning(nullptr, tr("Внимание"), msg);
+    }
+
+    setData();
+}
+
+void TreeModel::setData()
+{
+    QDir dir = m_source_dir;
+    dir.setSorting(QDir::DirsFirst | QDir::Name | QDir::IgnoreCase);
+    dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+    QFileInfoList infoList = dir.entryInfoList();
+
+    foreach (QFileInfo fileInfo, infoList)
+    {
+        if (fileInfo.isDir())
+        {
+            m_rootItem->appendChild(new TreeItem(
+                                        TreeItem::treeType::directory,
+                                        QVariant(fileInfo.filePath()),
+                                        m_rootItem
+                                        ));
+        }
+        else if (fileInfo.isFile() &&
+                 ("h" == fileInfo.suffix() || "c" == fileInfo.suffix()))
+        {
+            bool need_append = true;
+            for(int i = 0; i < m_rootItem->childCount(); ++i)
             {
-                if (parents.last()->childCount() > 0)
+                QFileInfo fi = QFileInfo(m_rootItem->child(i)->path());
+
+                if (fi.baseName() == fileInfo.baseName())
                 {
-                    parents << parents.last()->child(parents.last()->childCount() - 1);
-                    indecations << position;
+                    need_append = false;
+                    if ("h" == fileInfo.suffix())
+                    {
+                        m_rootItem->child(i)->setFlagHeader();
+                    }
+                    else
+                    {
+                        m_rootItem->child(i)->setFlagSource();
+                    }
                 }
             }
-            else
+
+            if (need_append)
             {
-                while(position < indecations.last() && parents.count() > 0)
-                {
-                    parents.pop_back();
-                    indecations.pop_back();
-                }
+                m_rootItem->appendChild(new TreeItem(
+                                            TreeItem::treeType::file,
+                                            QVariant(fileInfo.filePath()),
+                                            m_rootItem
+                                            ));
             }
 
-            parents.last()->appendChild(new TreeItem(columnData, parents.last()));
         }
-
-        ++number;
     }
 }

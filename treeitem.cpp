@@ -1,51 +1,158 @@
 #include "treeitem.h"
 
-#include <QStringList>
+QList<QString> TreeItem::m_type_icon_path = {"",
+                                          ":/img/dir.png",
+                                          ":/img/c-lang-icon.png",
+                                          ":/img/func-icon.png",
+                                          ":/img/var-icon.png"
+                                          ":/img/macro-icon.png",
+                                          ":/img/enum-icon.png"
+                                         };
 
-TreeItem::TreeItem(const QList<QVariant> &data_, TreeItem *parent_)
+TreeItem::TreeItem(TreeItem::treeType type, const QVariant &data, TreeItem *parent)
+    : m_type(type), m_parentItem(parent)
 {
-    m_parentItem = parent_;
-    m_itemData = data_;
+    switch(m_type)
+    {
+    case treeType::root:
+        m_data = data;
+        break;
+    case treeType::file:
+    {
+        m_path = data.toString();
+        QFileInfo fi = QFileInfo(m_path);
+        m_data = QVariant(fi.baseName());
+    }  break;
+    case treeType::directory:
+    {
+        m_path = data.toString();
+        QFileInfo fi = QFileInfo(m_path);
+        m_data = QVariant(fi.baseName());
+
+        setData();
+    }  break;
+    default:
+        break;
+    }
 }
 
 TreeItem::~TreeItem()
 {
-    qDeleteAll(m_childItems);
+    delete m_parentItem;
+    qDeleteAll(m_childItem);
 }
 
-void TreeItem::appendChild(TreeItem *child_)
+void TreeItem::setData(const QVariant &data)
 {
-    m_childItems.append(child_);
+    m_data = data;
 }
 
-TreeItem *TreeItem::child(int row_)
+QVariant TreeItem::data() const
 {
-    return m_childItems.value(row_);
+    return m_data;
+}
+
+void TreeItem::appendChild(TreeItem *child)
+{
+    m_childItem.append(child);
+}
+
+TreeItem *TreeItem::child(int row)
+{
+    return m_childItem.value(row);
 }
 
 int TreeItem::childCount() const
 {
-    return m_childItems.count();
+    return m_childItem.count();
 }
 
-int TreeItem::columnCount() const
+TreeItem *TreeItem::paremtItem()
 {
-    return m_itemData.count();
-}
-
-QVariant TreeItem::data(int column_) const
-{
-    return m_itemData.value(column_);
+    return m_parentItem;
 }
 
 int TreeItem::row() const
 {
-    return ( m_parentItem
-             ? m_parentItem ->m_childItems.indexOf(const_cast<TreeItem*>(this))
-             : 0);
+    return (m_parentItem
+            ? m_parentItem->m_childItem.indexOf(const_cast<TreeItem*>(this))
+            : 0);
 }
 
-TreeItem *TreeItem::parentItem()
+QString TreeItem::typeIconPath() const
 {
-    return m_parentItem;
+    treeType type = treeType::size <= m_type ? treeType::root : m_type;
+    return m_type_icon_path[int(type)];
 }
+
+TreeItem::treeType TreeItem::type() const
+{
+    return m_type;
+}
+
+void TreeItem::setFlagHeader()
+{
+    m_flag_header_file = true;
+}
+
+void TreeItem::setFlagSource()
+{
+    m_flag_source_file = true;
+}
+
+QString TreeItem::path() const
+{
+    return m_path;
+}
+
+void TreeItem::setData()
+{
+
+    QDir dir = m_path;
+    dir.setSorting(QDir::DirsFirst | QDir::Name | QDir::IgnoreCase);
+    dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    QFileInfoList infoList = dir.entryInfoList();
+    foreach (QFileInfo fileInfo, infoList) {
+        if (fileInfo.isDir())
+        {
+            this->appendChild(new TreeItem(
+                                  TreeItem::treeType::directory,
+                                  QVariant(fileInfo.filePath()),
+                                  this
+                                  ));
+        }
+        else if (fileInfo.isFile() &&
+                 ("h" == fileInfo.suffix() || "c" == fileInfo.suffix()))
+        {
+            bool need_append = true;
+            for(int i = 0; i < this->childCount(); ++i)
+            {
+                QFileInfo fi = QFileInfo(this->child(i)->path());
+
+                if (fi.baseName() == fileInfo.baseName())
+                {
+                    need_append = false;
+                    if ("h" == fileInfo.suffix())
+                    {
+                        this->child(i)->setFlagHeader();
+                    }
+                    else
+                    {
+                        this->child(i)->setFlagSource();
+                    }
+                }
+            }
+
+            if (need_append)
+            {
+                this->appendChild(new TreeItem(
+                                      TreeItem::treeType::file,
+                                      QVariant(fileInfo.filePath()),
+                                      this
+                                      ));
+            }
+        }
+    }
+}
+

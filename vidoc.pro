@@ -28,15 +28,16 @@ SOURCES += \
         mainwindow.cpp \
     targetfilehandler.cpp \
     treeitem.cpp \
-    treemodel.cpp \
-    treeitem2.cpp \
-    treemodel2.cpp
+    treemodel.cpp
 
 HEADERS += \
         mainwindow.h \
     appinfo.h \
     targetfilehandler.h \
     treeitem.h \
-    treemodel.h \
-    treeitem2.h \
-    treemodel2.h
+    treemodel.h
+
+RESOURCES += \
+    qrc.qrc
+
+DISTFILES +=

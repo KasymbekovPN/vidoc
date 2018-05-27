@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="macro-icon.svg"
+   inkscape:export-filename="C:\projects\vidoc\vidoc\img\macro-icon.png"
+   inkscape:export-xdpi="7.4462671"
+   inkscape:export-ydpi="7.4462671">
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4562">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4558" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop4560" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 148.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="210 : 148.5 : 1"
+       inkscape:persp3d-origin="105 : 99 : 1"
+       id="perspective10" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4562"
+       id="linearGradient4564"
+       x1="17.73706"
+       y1="103.56004"
+       x2="37.10214"
+       y2="103.56004"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="-30.790219"
+     inkscape:cy="770.25595"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="837"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       id="path4536"
+       sodipodi:sides="6"
+       sodipodi:cx="34.210499"
+       sodipodi:cy="82.516205"
+       sodipodi:r1="27.136084"
+       sodipodi:r2="23.500538"
+       sodipodi:arg1="1.0388226"
+       sodipodi:arg2="1.5624213"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 47.974878,105.90229 20.839746,106.12955 7.0753669,82.743466 20.446119,59.130122 47.581251,58.902861 61.345631,82.288944 Z"
+       style="stroke-width:0.26458332;stroke:#000000;stroke-opacity:1;fill-opacity:1;fill:#4900ff"
+       transform="rotate(0.46450495,34.210499,82.516206)"
+       inkscape:transform-center-y="-1.0410777e-006" />
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:41.46547699px;line-height:1.25;font-family:Candara;-inkscape-font-specification:'Candara, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.91014963"
+       x="19.337292"
+       y="89.348694"
+       id="text4540"
+       transform="scale(0.95779818,1.0440613)"><tspan
+         sodipodi:role="line"
+         id="tspan4538"
+         x="19.337292"
+         y="89.348694"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:41.46547699px;font-family:Candara;-inkscape-font-specification:'Candara, Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.91014963">m</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.46444818;stroke-opacity:1"
+       id="rect4566"
+       width="13.785254"
+       height="4.1355519"
+       x="27.719055"
+       y="54.597595" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.46444818;stroke-opacity:1"
+       id="rect4566-9"
+       width="13.785254"
+       height="4.1355519"
+       x="26.936243"
+       y="105.75514" />
+  </g>
+</svg>

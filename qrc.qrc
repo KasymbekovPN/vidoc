@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/c-lang-icon.png</file>
+        <file>img/dir.png</file>
+        <file>img/func-icon.png</file>
+        <file>img/macro-icon.png</file>
+        <file>img/var-icon.png</file>
+        <file>img/enum-icon.png</file>
+    </qresource>
+</RCC>
