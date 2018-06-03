@@ -12,6 +12,10 @@
 #include <QDir>
 #include <QFileInfoList>
 
+#include <memory>
+
+using std::shared_ptr;
+
 class TreeItem
 {
 public:
@@ -29,7 +33,7 @@ public:
         size
     };
 
-    explicit TreeItem(treeType type, const QVariant& data, TreeItem* parent = nullptr);
+    explicit TreeItem(treeType type, const QVariant& data, shared_ptr<QList<QString>> ignored_files, TreeItem* parent = nullptr);
     ~TreeItem();
 
     void setData(const QVariant& data);
@@ -63,6 +67,8 @@ private:
     QString m_path;
     bool m_flag_header_file;
     bool m_flag_source_file;
+
+    shared_ptr<QList<QString>> m_ignored_files;
 
 };
 

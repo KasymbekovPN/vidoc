@@ -3,7 +3,10 @@
 TreeModel::TreeModel(QObject *parent)
 {
     QVariant rootItem = tr("Заголовок");
-    m_rootItem = new TreeItem(TreeItem::treeType::root, rootItem);
+    QList<QString> tmp;
+    m_ignored_files = std::make_shared<QList<QString>>(QList<QString>());
+
+    m_rootItem = new TreeItem(TreeItem::treeType::root, rootItem, m_ignored_files);
 }
 
 TreeModel::~TreeModel()
@@ -149,11 +152,12 @@ void TreeModel::setConfig(const QJsonObject &config, const QString& target_name)
     QList<QString> nonexist_file;
     QFileInfo fileInfo;
     foreach (QVariant vStr, lst) {
+
         QString filePath = vStr.toString();
         fileInfo = filePath;
         if (fileInfo.exists() && fileInfo.isFile())
         {
-            m_ignored_files.append(filePath);
+            m_ignored_files.get()->append(filePath);
         }
         else
         {
@@ -175,6 +179,7 @@ void TreeModel::setConfig(const QJsonObject &config, const QString& target_name)
 
 void TreeModel::setData()
 {
+
     QDir dir = m_source_dir;
     dir.setSorting(QDir::DirsFirst | QDir::Name | QDir::IgnoreCase);
     dir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
@@ -187,6 +192,7 @@ void TreeModel::setData()
             m_rootItem->appendChild(new TreeItem(
                                         TreeItem::treeType::directory,
                                         QVariant(fileInfo.filePath()),
+                                        m_ignored_files,
                                         m_rootItem
                                         ));
         }
@@ -194,20 +200,32 @@ void TreeModel::setData()
                  ("h" == fileInfo.suffix() || "c" == fileInfo.suffix()))
         {
             bool need_append = true;
-            for(int i = 0; i < m_rootItem->childCount(); ++i)
+            for(auto ignored_file_name: *m_ignored_files)
             {
-                QFileInfo fi = QFileInfo(m_rootItem->child(i)->path());
-
-                if (fi.baseName() == fileInfo.baseName())
+                if (ignored_file_name == fileInfo.filePath())
                 {
                     need_append = false;
-                    if ("h" == fileInfo.suffix())
+                    break;
+                }
+            }
+
+            if (need_append)
+            {
+                for(int i = 0; i < m_rootItem->childCount(); ++i)
+                {
+                    QFileInfo fi = QFileInfo(m_rootItem->child(i)->path());
+
+                    if (fi.baseName() == fileInfo.baseName())
                     {
-                        m_rootItem->child(i)->setFlagHeader();
-                    }
-                    else
-                    {
-                        m_rootItem->child(i)->setFlagSource();
+                        need_append = false;
+                        if ("h" == fileInfo.suffix())
+                        {
+                                m_rootItem->child(i)->setFlagHeader();
+                        }
+                        else
+                        {
+                            m_rootItem->child(i)->setFlagSource();
+                        }
                     }
                 }
             }
@@ -217,10 +235,10 @@ void TreeModel::setData()
                 m_rootItem->appendChild(new TreeItem(
                                             TreeItem::treeType::file,
                                             QVariant(fileInfo.filePath()),
+                                            m_ignored_files,
                                             m_rootItem
                                             ));
             }
-
         }
     }
 }

@@ -19,7 +19,9 @@
 #include <QIcon>
 #include <QPixmap>
 
-//class TreeItem;
+#include <memory>
+
+using std::shared_ptr;
 
 class TreeModel : public QAbstractItemModel
 {
@@ -47,7 +49,7 @@ private:
     TreeItem* m_rootItem;
     QString m_source_dir;
     QString m_output_dir;
-    QList<QString> m_ignored_files;
+    shared_ptr<QList<QString>> m_ignored_files;
 };
 
 #endif // TREEMODEL2_H

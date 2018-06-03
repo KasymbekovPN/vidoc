@@ -117,9 +117,7 @@ void MainWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("Файл"));
     fileMenu->addAction(actCreateNewTarget);
     fileMenu->addAction(actOpenTarget);
-#ifdef  TASK_0_0_4__1
     fileMenu->addAction(actEditTarget);
-#endif
     fileMenu->addAction(actExit);
 
     helpMenu = menuBar()->addMenu(tr("Справка"));

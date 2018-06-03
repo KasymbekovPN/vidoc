@@ -9,8 +9,8 @@ QList<QString> TreeItem::m_type_icon_path = {"",
                                           ":/img/enum-icon.png"
                                          };
 
-TreeItem::TreeItem(TreeItem::treeType type, const QVariant &data, TreeItem *parent)
-    : m_type(type), m_parentItem(parent)
+TreeItem::TreeItem(TreeItem::treeType type, const QVariant &data, shared_ptr<QList<QString>> ignored_files, TreeItem *parent)
+    : m_type(type), m_parentItem(parent), m_ignored_files(ignored_files)
 {
     switch(m_type)
     {
@@ -119,6 +119,7 @@ void TreeItem::setData()
             this->appendChild(new TreeItem(
                                   TreeItem::treeType::directory,
                                   QVariant(fileInfo.filePath()),
+                                  m_ignored_files,
                                   this
                                   ));
         }
@@ -126,20 +127,32 @@ void TreeItem::setData()
                  ("h" == fileInfo.suffix() || "c" == fileInfo.suffix()))
         {
             bool need_append = true;
-            for(int i = 0; i < this->childCount(); ++i)
-            {
-                QFileInfo fi = QFileInfo(this->child(i)->path());
 
-                if (fi.baseName() == fileInfo.baseName())
+            for(auto ignored_file_name: *m_ignored_files)
+            {
+                if (ignored_file_name == fileInfo.filePath())
                 {
                     need_append = false;
-                    if ("h" == fileInfo.suffix())
+                }
+            }
+
+            if (need_append)
+            {
+                for(int i = 0; i < this->childCount(); ++i)
+                {
+                    QFileInfo fi = QFileInfo(this->child(i)->path());
+
+                    if (fi.baseName() == fileInfo.baseName())
                     {
-                        this->child(i)->setFlagHeader();
-                    }
-                    else
-                    {
-                        this->child(i)->setFlagSource();
+                        need_append = false;
+                        if ("h" == fileInfo.suffix())
+                        {
+                            this->child(i)->setFlagHeader();
+                        }
+                        else
+                        {
+                            this->child(i)->setFlagSource();
+                        }
                     }
                 }
             }
@@ -149,6 +162,7 @@ void TreeItem::setData()
                 this->appendChild(new TreeItem(
                                       TreeItem::treeType::file,
                                       QVariant(fileInfo.filePath()),
+                                      m_ignored_files,
                                       this
                                       ));
             }
