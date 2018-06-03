@@ -6,94 +6,140 @@ TargetFileHandler::TargetFileHandler(mode mode_, const QString &targetPath_, QWi
       m_targetPath(targetPath_)
 {
 
-    lblTargetName = new QLabel(tr("Имя цели:"));
-    lblPath2Target = new QLabel(tr("Путь до цели:"));
+    QFileInfo fi(m_targetPath);
+    QFile file(targetPath_);
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QMessageBox::critical(this, tr("Ошибка"), tr("Не удается открыть файл."));
+        return;
+    }
+
+    QByteArray lines = file.readAll();
+    QJsonObject jObj = QJsonDocument::fromJson(lines).object();
+
+    mLbl_targetName = new QLabel(tr("Имя цели:"));    
+    mLe_editTargetName = new QLineEdit;
+    if (mode::edit == mode_)
+    {
+        mLe_editTargetName->setText(fi.baseName());
+        mLe_editTargetName->setReadOnly(true);
+    }
+
+    mLbl_targetPath = new QLabel(tr("Путь до цели:"));
+    mLe_editTargetPath = new QLineEdit;
+    if (mode::edit == mode_)
+    {
+        mLe_editTargetPath->setText(fi.absoluteDir().path());
+        mLe_editTargetPath->setReadOnly(true);
+    }
+    mBtn_targetPath = new QPushButton(tr("..."));
+
+    mLbl_sourceDir = new QLabel(tr("Входные данные:"));
+    mLe_editSourceDir = new QLineEdit;
+    if (mode::edit == mode_)
+    {
+        mLe_editSourceDir->setText(jObj["source-dir"].toString());
+        mLe_editSourceDir->setReadOnly(true);
+    }
+    mBtn_sourceDir = new QPushButton(tr("..."));
+
+    mLbl_outputDir = new QLabel(tr("Выходные данные:"));
+    mLe_editOutputDir = new QLineEdit;
+    if (mode::edit == mode_)
+    {
+        mLe_editOutputDir->setText(jObj["output-dir"].toString());
+        mLe_editOutputDir->setReadOnly(true);
+    }
+    mBtn_outputDir = new QPushButton(tr("..."));
+
     lblIgnored = new QLabel(tr("Игнорируемый файлы:"));
-    leTargetName = new QLineEdit;
-    lePath2Target = new QLineEdit;
-    btnPath2Target = new QPushButton(tr("..."));
-    btnEsc = new QPushButton(tr("Закрыть"));
-    btnOk = new QPushButton(tr("OK"));
-    btnIgnoredListClear = new QPushButton(tr("Очитить"));
-    btnIgnoredListRemote = new QPushButton(tr("Удалить"));
-    btnIgnoredListAdd = new QPushButton(tr("Добавить"));
 
-    lblSourceDir = new QLabel(tr("Входные данные:"));
-    leSourceDir = new QLineEdit;
-    btnSourceDir = new QPushButton(tr("..."));
+    mBtn_esc = new QPushButton(tr("Закрыть"));
+    mBtn_ok = new QPushButton(tr("OK"));
 
-    lblOutputDir = new QLabel(tr("Выходные данные:"));
-    leOutputDir = new QLineEdit;
-    btnOutputDir = new QPushButton(tr("..."));
+    mBtn_clearIgnoredLst = new QPushButton(tr("Очистить"));
+    mBtn_addIgnoredLst = new QPushButton(tr("Добавить"));
+    mBtn_remoteIgnoredLst = new QPushButton(tr("Удалить"));
 
-    lstvIgnored = new QListView;
-    ignoredListModel = new QStringListModel;
-    lstvIgnored->setModel(ignoredListModel);
-    lstvIgnored->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    mLstView_ignoredFiles = new QListView;
+    mStrLstMdl_ignoredFiles = new QStringListModel;
+
+    QList<QVariant> ignored_lst = jObj["ignored-files"].toArray().toVariantList();
+    QStringList str_lst;
+    foreach (auto line, ignored_lst) {
+        str_lst.append(line.toString());
+    }
+    mStrLstMdl_ignoredFiles->setStringList(str_lst);
+
+    mLstView_ignoredFiles->setModel(mStrLstMdl_ignoredFiles);
+    mLstView_ignoredFiles->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     QHBoxLayout *footLay = new QHBoxLayout;
     footLay->addSpacing(300);
-    footLay->addWidget(btnEsc);
-    footLay->addWidget(btnOk);
+    footLay->addWidget(mBtn_esc);
+    footLay->addWidget(mBtn_ok);
 
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget(lblTargetName, 0, 0);
-    layout->addWidget(leTargetName, 0, 1);
-    layout->addWidget(lblPath2Target, 1, 0);
-    layout->addWidget(lePath2Target, 1, 1);
-    layout->addWidget(btnPath2Target, 1, 2);
+    layout->addWidget(mLbl_targetName, 0, 0);
+    layout->addWidget(mLe_editTargetName, 0, 1);
 
-    layout->addWidget(lblSourceDir, 2, 0);
-    layout->addWidget(leSourceDir, 2, 1);
-    layout->addWidget(btnSourceDir, 2, 2);
+    layout->addWidget(mLbl_targetPath, 1, 0);
+    layout->addWidget(mLe_editTargetPath, 1, 1);
+    layout->addWidget(mBtn_targetPath, 1, 2);
 
-    layout->addWidget(lblOutputDir, 3, 0);
-    layout->addWidget(leOutputDir, 3, 1);
-    layout->addWidget(btnOutputDir, 3, 2);
+    layout->addWidget(mLbl_sourceDir, 2, 0);
+    layout->addWidget(mLe_editSourceDir, 2, 1);
+    layout->addWidget(mBtn_sourceDir);
+
+    layout->addWidget(mLbl_outputDir, 3, 0);
+    layout->addWidget(mLe_editOutputDir, 3, 1);
+    layout->addWidget(mBtn_outputDir, 3, 2);
 
     layout->addWidget(lblIgnored, 4, 0);
-    layout->addWidget(lstvIgnored, 4, 1, 3, 1);
-    layout->addWidget(btnIgnoredListAdd, 4, 2);
-    layout->addWidget(btnIgnoredListRemote, 5, 2);
-    layout->addWidget(btnIgnoredListClear, 6, 2);
+    layout->addWidget(mLstView_ignoredFiles, 4, 1, 3, 1);
+    layout->addWidget(mBtn_addIgnoredLst, 4, 2);
+    layout->addWidget(mBtn_remoteIgnoredLst, 5, 2);
+    layout->addWidget(mBtn_clearIgnoredLst, 6, 2);
     layout->addLayout(footLay, 7, 0, 1, 3);
 
     setLayout(layout);
 
-    setWindowTitle(tr("Новая цель"));
+    setWindowTitle(mode::create == mode_ ? tr("Новая цель") : tr("Редактировать..."));
     setMinimumSize(200, 200);
     resize(470, 210);
 
-    connect(btnPath2Target, SIGNAL(clicked()), this, SLOT(btnPath2TargetOnClick()));
-    connect(btnEsc, SIGNAL(clicked()), this, SLOT(close()));
-    connect(btnOk, SIGNAL(clicked()), this, SLOT(btnOkOnClick()));
-    connect(btnIgnoredListAdd, SIGNAL(clicked()), this, SLOT(btnIgnoredListAddOnClick()));
-    connect(btnIgnoredListClear, SIGNAL(clicked()), this, SLOT(btnIgnoredListClearOnClick()));
-    connect(btnIgnoredListRemote, SIGNAL(clicked()), this, SLOT(btnIgnoredListRemoteOnClick()));
-    connect(btnSourceDir, SIGNAL(clicked()), this, SLOT(btnSourceDirOnClick()));
-    connect(btnOutputDir, SIGNAL(clicked()), this, SLOT(btnOutputDirOnClick()));
+    connect(mBtn_targetPath, SIGNAL(clicked()), this, SLOT(btn_on_click_target_path()));
+    connect(mBtn_esc, SIGNAL(clicked()), this, SLOT(close()));
+    connect(mBtn_ok, SIGNAL(clicked()), this, SLOT(btn_on_click_ok()));
+    connect(mBtn_addIgnoredLst, SIGNAL(clicked()), this, SLOT(btn_on_click_add_ignored_lst()));
+    connect(mBtn_clearIgnoredLst, SIGNAL(clicked()), this, SLOT(btn_on_click_clear_ignored_lst()));
+    connect(mBtn_remoteIgnoredLst, SIGNAL(clicked()), this, SLOT(btn_on_click_remote_ignored_lst()));
+    connect(mBtn_sourceDir, SIGNAL(clicked()), this, SLOT(btn_on_click_source_dir()));
+    connect(mBtn_outputDir, SIGNAL(clicked()), this, SLOT(btn_on_click_output_dir()));
+
 }
 
-void TargetFileHandler::btnPath2TargetOnClick()
+void TargetFileHandler::btn_on_click_target_path()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Укажите путь к папке"), tr("C://"));
-    lePath2Target->setText(path);
+    mLe_editTargetPath->setText(path);
 }
 
-void TargetFileHandler::btnOkOnClick()
+void TargetFileHandler::btn_on_click_ok()
 {
-    if (leTargetName->text().toStdString().empty())
+    if (mLe_editTargetName->text().toStdString().empty())
     {
         QMessageBox::warning(this, tr("Внимание!"), tr("Имя цели не заданно."));
         return;
     }
 
-    if (lePath2Target->text().toStdString().empty())
+    if (mLe_editTargetPath->text().toStdString().empty())
     {
         QMessageBox::warning(this, tr("Внимание!"), tr("Путь до цели не задан."));
         return;
     }
-    QDir dir = lePath2Target->text();
+
+    QDir dir = mLe_editTargetPath->text();
     if (!dir.exists())
     {
         QMessageBox::warning(this, tr("Внимание!"), tr("<b>Путь до цели.</b><br>"
@@ -101,13 +147,13 @@ void TargetFileHandler::btnOkOnClick()
         return;
     }
 
-    if (leSourceDir->text().toStdString().empty())
+    if (mLe_editSourceDir->text().toStdString().empty())
     {
         QMessageBox::warning(this, tr("Внимание!"), tr("Путь до входных данных не задан."));
         return;
     }
 
-    dir.setPath(leSourceDir->text());
+    dir.setPath(mLe_editSourceDir->text());
     if (!dir.exists())
     {
         QMessageBox::warning(this, tr("Внимание"), tr("<b>Входные данные</b><br>"
@@ -115,13 +161,13 @@ void TargetFileHandler::btnOkOnClick()
         return;
     }
 
-    if (leOutputDir->text().toStdString().empty())
+    if (mLe_editOutputDir->text().toStdString().empty())
     {
         QMessageBox::warning(this, tr("Внимание!"), tr("Путь до выходных данных не задан."));
         return;
     }
 
-    dir.setPath(leOutputDir->text());
+    dir.setPath(mBtn_outputDir->text());
     if (!dir.exists())
     {
         QMessageBox::warning(this, tr("Внимание"), tr("<b>Выходные данные</b><br>"
@@ -130,37 +176,39 @@ void TargetFileHandler::btnOkOnClick()
     }
 
     QJsonArray ignoredLstArray;
-    QStringList ignoredLst = ignoredListModel->stringList();
+    QStringList ignoredLst = mStrLstMdl_ignoredFiles->stringList();
     for(int i = 0; i < ignoredLst.size(); ++i)
     {
         ignoredLstArray.insert(i, QJsonValue(ignoredLst[i]));
     }
 
     QJsonObject root;    
-    root.insert("ignored-files", QJsonValue(ignoredLstArray));
-    root.insert("output-dir", QJsonValue(leOutputDir->text()));
-    root.insert("source-dir", QJsonValue(leSourceDir->text()));
+    root.insert("ignored-files", QJsonValue(ignoredLstArray));    
+    root.insert("output-dir", QJsonValue(mLe_editOutputDir->text()));
+    root.insert("source-dir", QJsonValue(mLe_editSourceDir->text()));
 
     QJsonDocument jDoc;
     jDoc.setObject(root);
 
-    QString fileName = lePath2Target->text() + "/" + leTargetName->text() + ".json";
+    QString fileName = mLe_editTargetPath->text() + "/" + mLe_editTargetName->text() + ".json";
     QFile jsonFile(fileName);
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(jDoc.toJson());
     jsonFile.close();
+
+    close();
 }
 
-void TargetFileHandler::btnIgnoredListAddOnClick()
+void TargetFileHandler::btn_on_click_add_ignored_lst()
 {    
 
     QString warningMsg = "";
-    if ("" == lePath2Target->text())
+    if (mLe_editTargetPath->text().toStdString().empty())
     {
         warningMsg = tr("Путь до директории не указан.");
     }
 
-    QDir dir = lePath2Target->text();
+    QDir dir = mLe_editTargetPath->text();
     if (!dir.exists())
     {
         warningMsg = tr("Указан путь до несуществующей директории.");
@@ -172,9 +220,8 @@ void TargetFileHandler::btnIgnoredListAddOnClick()
         return;
     }
 
-    QStringList selectedFileNames = QFileDialog::getOpenFileNames(this, "Open Dialog", leSourceDir->text(), "*.cpp *.c *.hpp *.h");
-    QStringList ignoredList = ignoredListModel->stringList();
-
+    QStringList selectedFileNames = QFileDialog::getOpenFileNames(this, "Open Dialog", mLe_editSourceDir->text(), "*.cpp *.c *.hpp *.h");
+    QStringList ignoredList = mStrLstMdl_ignoredFiles->stringList();
     QStringList resList = ignoredList;
     foreach (QString selectedItem, selectedFileNames)
     {
@@ -200,41 +247,41 @@ void TargetFileHandler::btnIgnoredListAddOnClick()
         }
     }
 
-    ignoredListModel->setStringList(resList);
+    mStrLstMdl_ignoredFiles->setStringList(resList);
 }
 
-void TargetFileHandler::btnIgnoredListClearOnClick()
+void TargetFileHandler::btn_on_click_clear_ignored_lst()
 {
     QStringList lst;
-    ignoredListModel->setStringList(lst);
+    mStrLstMdl_ignoredFiles->setStringList(lst);
 }
 
-void TargetFileHandler::btnIgnoredListRemoteOnClick()
+void TargetFileHandler::btn_on_click_remote_ignored_lst()
 {
     QList<int> lst;
-    foreach (auto item, lstvIgnored->selectionModel()->selectedIndexes()) {
+    foreach (auto item, mLstView_ignoredFiles->selectionModel()->selectedIndexes())
+    {
         lst << item.row();
     }
 
     qSort(lst.begin(), lst.end(), qGreater<int>());
 
-    QStringList strLst = ignoredListModel->stringList();
+    QStringList strLst = mStrLstMdl_ignoredFiles->stringList();
     foreach (auto index, lst) {
         strLst.removeAt(index);
     }
 
-    ignoredListModel->setStringList(strLst);
-
+    mStrLstMdl_ignoredFiles->setStringList(strLst);
 }
 
-void TargetFileHandler::btnSourceDirOnClick()
+void TargetFileHandler::btn_on_click_source_dir()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Укажите путь к папке"), tr("C://"));
-    leSourceDir->setText(path);
+    mLe_editSourceDir->setText(path);
 }
 
-void TargetFileHandler::btnOutputDirOnClick()
+void TargetFileHandler::btn_on_click_output_dir()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Укажите путь к папке"), tr("C://"));
-    leOutputDir->setText(path);
+    mLe_editOutputDir->setText(path);
 }

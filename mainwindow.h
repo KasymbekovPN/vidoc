@@ -3,8 +3,6 @@
 
 #include "appinfo.h"
 #include "targetfilehandler.h"
-//#include "treemodel.h"
-//#include "treeitem.h"
 #include "treeitem.h"
 #include "treemodel.h"
 
@@ -32,6 +30,7 @@ public:
 private slots:
     void createNewTarget();
     void clickOnActtion_OpenTarget();
+    void clickOnAction_EditTarget();
     void about();
 
 private:
@@ -43,12 +42,15 @@ private:
 
     QAction* actCreateNewTarget;
     QAction* actOpenTarget;
+    QAction* actEditTarget;
     QAction* actExit;
     QAction* actAbout;
     QAction* actAboutQt;
 
     TreeModel* model;
     QTreeView* treeView;
+
+    QString m_targetPath;
 };
 
 #endif // MAINWINDOW_H

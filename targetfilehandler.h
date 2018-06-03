@@ -1,6 +1,8 @@
 #ifndef NEWTARGETCREATIONWINDOW_H
 #define NEWTARGETCREATIONWINDOW_H
 
+#include "appinfo.h"
+
 #include <QWidget>
 #include <QDialog>
 #include <QPushButton>
@@ -40,40 +42,45 @@ public:
 signals:
 
 public slots:
-    void btnPath2TargetOnClick();
-    void btnOkOnClick();
-    void btnIgnoredListAddOnClick();
-    void btnIgnoredListClearOnClick();
-    void btnIgnoredListRemoteOnClick();
-    void btnSourceDirOnClick();
-    void btnOutputDirOnClick();
+
+    void btn_on_click_target_path();
+    void btn_on_click_ok();
+    void btn_on_click_add_ignored_lst();
+    void btn_on_click_clear_ignored_lst();
+    void btn_on_click_remote_ignored_lst();
+    void btn_on_click_source_dir();
+    void btn_on_click_output_dir();
 
 private:
     mode m_mode;
     QString m_targetPath;
 
-    QLabel *lblPath2Target;
-    QLabel *lblTargetName;
+    QLabel* mLbl_targetName;
+    QLineEdit* mLe_editTargetName;
 
-    QLabel *lblSourceDir;
-    QLineEdit* leSourceDir;
-    QPushButton* btnSourceDir;
+    QLabel* mLbl_targetPath;
+    QLineEdit* mLe_editTargetPath;
+    QPushButton* mBtn_targetPath;
 
-    QLabel *lblOutputDir;
-    QLineEdit* leOutputDir;
-    QPushButton* btnOutputDir;
+    QLabel* mLbl_sourceDir;
+    QLineEdit* mLe_editSourceDir;
+    QPushButton* mBtn_sourceDir;
+
+    QLabel* mLbl_outputDir;
+    QLineEdit* mLe_editOutputDir;
+    QPushButton* mBtn_outputDir;
 
     QLabel *lblIgnored;
-    QLineEdit *lePath2Target;
-    QLineEdit *leTargetName;
-    QPushButton* btnEsc;
-    QPushButton* btnOk;
-    QPushButton* btnPath2Target;
-    QPushButton* btnIgnoredListClear;
-    QPushButton* btnIgnoredListAdd;
-    QPushButton* btnIgnoredListRemote;
-    QListView *lstvIgnored;
-    QStringListModel* ignoredListModel;
+
+    QPushButton* mBtn_ok;
+    QPushButton* mBtn_esc;
+
+    QPushButton* mBtn_clearIgnoredLst;
+    QPushButton* mBtn_addIgnoredLst;
+    QPushButton* mBtn_remoteIgnoredLst;
+
+    QListView* mLstView_ignoredFiles;
+    QStringListModel* mStrLstMdl_ignoredFiles;
 };
 
 #endif // NEWTARGETCREATIONWINDOW_H
