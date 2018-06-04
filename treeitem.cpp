@@ -105,6 +105,19 @@ QString TreeItem::path() const
     return m_path;
 }
 
+#ifdef  TASK_0_0_4__6
+void TreeItem::clear()
+{
+//    m_parentItem = nullptr;
+    m_data.clear();
+    m_childItem.clear();
+//    treeType m_type;
+//    QString m_path;
+//    bool m_flag_header_file;
+//    bool m_flag_source_file;
+}
+#endif//TASK_0_0_4__6
+
 void TreeItem::setData()
 {
 

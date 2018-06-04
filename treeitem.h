@@ -53,6 +53,10 @@ public:
     void setFlagSource();
     QString path() const;
 
+#ifdef  TASK_0_0_4__6
+    void clear();
+#endif//TASK_0_0_4__6
+
 private:
 
     void setData();

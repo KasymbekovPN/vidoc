@@ -110,6 +110,9 @@ int TreeModel::columnCount(const QModelIndex &parent) const
 void TreeModel::setConfig(const QJsonObject &config, const QString& target_name)
 {
 
+#ifdef  TASK_0_0_4__6
+    m_rootItem->clear();
+#endif//TASK_0_0_4__6
     m_rootItem->setData(QVariant(target_name));
 
     //

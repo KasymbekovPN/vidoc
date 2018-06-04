@@ -62,8 +62,6 @@ void MainWindow::clickOnActtion_OpenTarget()
 
 void MainWindow::clickOnAction_EditTarget()
 {
-    qDebug() << "clickOnAction_EditTarget";
-    qDebug() << m_targetPath;
 
     if (m_targetPath.isEmpty())
     {
@@ -80,6 +78,16 @@ void MainWindow::clickOnAction_EditTarget()
 
     TargetFileHandler win(TargetFileHandler::mode::edit, m_targetPath, this);
     win.exec();
+
+#ifdef  TASK_0_0_4__6
+    QByteArray lines = file.readAll();
+    QJsonObject jObj = QJsonDocument::fromJson(lines).object();
+
+    QFileInfo fi = m_targetPath;
+    model->setConfig(jObj, fi.baseName());
+    treeView->reset();
+#endif//TASK_0_0_4__6
+
 }
 
 void MainWindow::about()

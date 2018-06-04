@@ -9,5 +9,6 @@
 #define TASK_0_0_4__4
 #define TASK_0_0_4__5
 #define TASK_0_0_4__5_test0
+#define TASK_0_0_4__6
 
 #endif // APPINFO_H
